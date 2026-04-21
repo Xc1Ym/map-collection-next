@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(50)
+  password  String   @db.VarChar(255)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Tag {
+  id         Int           @id @default(autoincrement())
+  name       String        @unique @db.VarChar(50)
+  color      String        @default("#3498db") @db.VarChar(7)
+  createdAt  DateTime      @default(now()) @map("created_at")
+  businesses BusinessTag[]
+
+  @@map("tags")
+}
+
+model Business {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  address     String
+  latitude    Decimal       @db.Decimal(10, 8)
+  longitude   Decimal       @db.Decimal(11, 8)
+  description String?
+  phone       String?       @db.VarChar(20)
+  website     String?       @db.VarChar(255)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  tags        BusinessTag[]
+
+  @@index([latitude, longitude])
+  @@index([name])
+  @@map("businesses")
+}
+
+model BusinessTag {
+  id         Int      @id @default(autoincrement())
+  businessId Int      @map("business_id")
+  tagId      Int      @map("tag_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, tagId])
+  @@map("business_tags")
+}
