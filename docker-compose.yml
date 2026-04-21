@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/map_collection
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=map_collection
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - AMAP_JS_API_KEY=${AMAP_JS_API_KEY}
+      - AMAP_SERVER_API_KEY=${AMAP_SERVER_API_KEY}
+      - AMAP_SECURITY_KEY=${AMAP_SECURITY_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: map_collection
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
