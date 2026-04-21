@@ -13,34 +13,54 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<AMap.Map | null>(null);
   const markersRef = useRef<AMap.Marker[]>([]);
+  const onMarkerClickRef = useRef(onMarkerClick);
   const [loaded, setLoaded] = useState(false);
 
+  // 保持 callback ref 最新，不触发 re-init
+  onMarkerClickRef.current = onMarkerClick;
+
   useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
+    const el = mapRef.current;
+    if (!el) return;
+
+    let destroyed = false;
 
     fetch("/api/amap/config")
       .then((r) => r.json())
       .then((config) => {
+        if (destroyed) return;
+
+        // 安全密钥必须在 load 之前设置
         window._AMapSecurityConfig = {
-          securityJsCode: config.apiKey,
+          securityJsCode: config.securityJsCode,
         };
 
-        AMapLoader.load({
+        return AMapLoader.load({
           key: config.apiKey,
           version: config.mapVersion,
-        }).then((AMap) => {
-          const map = new AMap.Map(mapRef.current!, {
-            zoom: 13,
-            center: [108.946465, 34.261433],
-          });
-          mapInstanceRef.current = map;
-          setLoaded(true);
         });
+      })
+      .then((AMap) => {
+        if (destroyed || !AMap || !mapRef.current) return;
+
+        const map = new AMap.Map(mapRef.current, {
+          zoom: 13,
+          center: [108.946465, 34.261433],
+        });
+        mapInstanceRef.current = map;
+        setLoaded(true);
+      })
+      .catch((err) => {
+        console.error("AMap load failed:", err);
       });
 
     return () => {
-      mapInstanceRef.current?.destroy();
-      mapInstanceRef.current = null;
+      destroyed = true;
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.destroy();
+        mapInstanceRef.current = null;
+      }
+      setLoaded(false);
     };
   }, []);
 
@@ -48,14 +68,11 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
     const map = mapInstanceRef.current;
     if (!map || !loaded) return;
 
-    // 清除旧标记
     markersRef.current.forEach((m) => map.remove(m));
     markersRef.current = [];
 
-    // 添加新标记
     businesses.forEach((b) => {
       const mainColor = b.tags[0]?.color || "#3498db";
-
       const marker = new AMap.Marker({
         position: new AMap.LngLat(b.longitude, b.latitude),
         title: b.name,
@@ -63,8 +80,9 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
       });
 
       marker.on("click", () => {
-        if (onMarkerClick) {
-          onMarkerClick(b);
+        const cb = onMarkerClickRef.current;
+        if (cb) {
+          cb(b);
         } else {
           window.open(
             `https://uri.amap.com/marker?position=${b.longitude},${b.latitude}&name=${encodeURIComponent(b.name)}&coordinate=gaode&callnative=1`,
@@ -77,11 +95,10 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
       markersRef.current.push(marker);
     });
 
-    // 调整视野
     if (businesses.length > 0) {
       map.setCenter([businesses[0].longitude, businesses[0].latitude]);
     }
-  }, [businesses, loaded, onMarkerClick]);
+  }, [businesses, loaded]);
 
   return (
     <div

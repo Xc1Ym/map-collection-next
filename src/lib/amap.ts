@@ -2,6 +2,7 @@ const SERVER_API_KEY = process.env.AMAP_SERVER_API_KEY || "";
 const BASE_URL = "https://restapi.amap.com/v3";
 
 async function amapFetch(url: string, retries = 3): Promise<unknown> {
+  let lastError: unknown;
   for (let i = 0; i < retries; i++) {
     try {
       const controller = new AbortController();
@@ -13,10 +14,13 @@ async function amapFetch(url: string, retries = 3): Promise<unknown> {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) {
-      if (i === retries - 1) throw err;
-      await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, i)));
+      lastError = err;
+      if (i < retries - 1) {
+        await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, i)));
+      }
     }
   }
+  throw lastError;
 }
 
 export async function searchPlace(keyword: string, city = "") {

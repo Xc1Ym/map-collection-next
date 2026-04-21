@@ -11,59 +11,75 @@ export function AmapPicker({ onLocationSelect }: AmapPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<AMap.Map | null>(null);
   const markerRef = useRef<AMap.Marker | null>(null);
+  const callbackRef = useRef(onLocationSelect);
   const [loaded, setLoaded] = useState(false);
 
+  // 保持 callback ref 最新，不触发地图 re-init
+  callbackRef.current = onLocationSelect;
+
   useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
+    const el = mapRef.current;
+    if (!el) return;
+
+    let destroyed = false;
 
     fetch("/api/amap/config")
       .then((r) => r.json())
       .then((config) => {
-        window._AMapSecurityConfig = { securityJsCode: config.apiKey };
+        if (destroyed) return;
 
-        AMapLoader.load({ key: config.apiKey, version: config.mapVersion }).then(
-          (AMap) => {
-            const map = new AMap.Map(mapRef.current!, {
-              zoom: 13,
-              center: [108.946465, 34.261433],
-            });
+        window._AMapSecurityConfig = { securityJsCode: config.securityJsCode };
 
-            map.on("click", async (e: { lnglat: { getLng: () => number; getLat: () => number } }) => {
-              const lng = e.lnglat.getLng();
-              const lat = e.lnglat.getLat();
+        return AMapLoader.load({
+          key: config.apiKey,
+          version: config.mapVersion,
+        });
+      })
+      .then((AMap) => {
+        if (destroyed || !AMap || !mapRef.current) return;
 
-              // 更新标记
-              if (markerRef.current) map.remove(markerRef.current);
-              markerRef.current = new AMap.Marker({
-                position: new AMap.LngLat(lng, lat),
-              });
-              map.add(markerRef.current!);
-              map.setCenter([lng, lat]);
+        const map = new AMap.Map(mapRef.current, {
+          zoom: 13,
+          center: [108.946465, 34.261433],
+        });
 
-              // 逆地理编码获取地址
-              try {
-                const res = await fetch(
-                  `/api/amap/geocode?lng=${lng}&lat=${lat}`
-                );
-                const data = await res.json();
-                const addr = data.data?.formatted_address || "";
-                onLocationSelect(lng, lat, addr);
-              } catch {
-                onLocationSelect(lng, lat, "");
-              }
-            });
+        map.on("click", async (e: { lnglat: { getLng: () => number; getLat: () => number } }) => {
+          const lng = e.lnglat.getLng();
+          const lat = e.lnglat.getLat();
 
-            mapInstanceRef.current = map;
-            setLoaded(true);
+          if (markerRef.current) map.remove(markerRef.current);
+          markerRef.current = new AMap.Marker({
+            position: new AMap.LngLat(lng, lat),
+          });
+          map.add(markerRef.current!);
+          map.setCenter([lng, lat]);
+
+          try {
+            const res = await fetch(`/api/amap/geocode?lng=${lng}&lat=${lat}`);
+            const data = await res.json();
+            const addr = data.data?.formatted_address || "";
+            callbackRef.current(lng, lat, addr);
+          } catch {
+            callbackRef.current(lng, lat, "");
           }
-        );
+        });
+
+        mapInstanceRef.current = map;
+        setLoaded(true);
+      })
+      .catch((err) => {
+        console.error("AMap Picker load failed:", err);
       });
 
     return () => {
-      mapInstanceRef.current?.destroy();
-      mapInstanceRef.current = null;
+      destroyed = true;
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.destroy();
+        mapInstanceRef.current = null;
+      }
+      setLoaded(false);
     };
-  }, [onLocationSelect]);
+  }, []);
 
   return (
     <div>
