@@ -1,6 +1,6 @@
 "use client";
 
-import type { Business, Tag } from "@/types";
+import type { Business } from "@/types";
 import {
   Table,
   TableBody,

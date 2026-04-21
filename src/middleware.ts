@@ -4,7 +4,6 @@ import { getToken } from "next-auth/jwt";
 
 const adminOnlyPaths = ["/admin"];
 const adminOnlyApiPaths = ["/api/amap/search", "/api/amap/geocode"];
-const publicPaths = ["/api/businesses", "/api/tags", "/api/amap/config", "/api/amap/service"];
 
 function startsWithAny(path: string, prefixes: string[]) {
   return prefixes.some((p) => path.startsWith(p));

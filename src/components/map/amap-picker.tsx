@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import AMapLoader from "@amap/amap-jsapi-loader";
 
 interface AmapPickerProps {
@@ -12,10 +12,10 @@ export function AmapPicker({ onLocationSelect }: AmapPickerProps) {
   const mapInstanceRef = useRef<AMap.Map | null>(null);
   const markerRef = useRef<AMap.Marker | null>(null);
   const callbackRef = useRef(onLocationSelect);
-  const [loaded, setLoaded] = useState(false);
 
-  // 保持 callback ref 最新，不触发地图 re-init
-  callbackRef.current = onLocationSelect;
+  useEffect(() => {
+    callbackRef.current = onLocationSelect;
+  });
 
   useEffect(() => {
     const el = mapRef.current;
@@ -65,7 +65,6 @@ export function AmapPicker({ onLocationSelect }: AmapPickerProps) {
         });
 
         mapInstanceRef.current = map;
-        setLoaded(true);
       })
       .catch((err) => {
         console.error("AMap Picker load failed:", err);
@@ -77,7 +76,6 @@ export function AmapPicker({ onLocationSelect }: AmapPickerProps) {
         mapInstanceRef.current.destroy();
         mapInstanceRef.current = null;
       }
-      setLoaded(false);
     };
   }, []);
 

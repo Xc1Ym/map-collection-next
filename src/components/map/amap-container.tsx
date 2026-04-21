@@ -16,8 +16,9 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
   const onMarkerClickRef = useRef(onMarkerClick);
   const [loaded, setLoaded] = useState(false);
 
-  // 保持 callback ref 最新，不触发 re-init
-  onMarkerClickRef.current = onMarkerClick;
+  useEffect(() => {
+    onMarkerClickRef.current = onMarkerClick;
+  });
 
   useEffect(() => {
     const el = mapRef.current;
