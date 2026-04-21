@@ -1,133 +1,133 @@
-# Map Collection / 美食收藏地图
+# 美食收藏地图
 
 一个基于高德地图的美食收藏管理系统，用于记录和展示收藏的餐厅、美食店铺。
 
-A food collection management system built with AMap (Gaode Maps) for bookmarking and displaying favorite restaurants and food spots.
+[English](./README_EN.md)
 
-## Tech Stack / 技术栈
+## 技术栈
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) + TypeScript |
-| Database | PostgreSQL 16 + Prisma 7 |
-| Auth | NextAuth.js v4 (JWT + Credentials) |
+| 层 | 技术 |
+|---|------|
+| 框架 | Next.js 16 (App Router) + TypeScript |
+| 数据库 | PostgreSQL 16 + Prisma 7 |
+| 认证 | NextAuth.js v4 (JWT + Credentials) |
 | UI | shadcn/ui + Tailwind CSS 4 |
-| Map | AMap JS API 2.0 (Proxy Security Mode) |
-| Data Fetching | SWR |
-| Validation | Zod |
-| Deploy | Docker (multi-stage build) |
+| 地图 | 高德地图 JS API 2.0（代理安全模式） |
+| 数据获取 | SWR |
+| 校验 | Zod |
+| 部署 | Docker（多阶段构建） |
 
-## Features / 功能
+## 功能
 
-- Interactive map with custom colored markers for each business
-- Tag-based filtering (cuisine type, visited status, etc.)
-- Admin dashboard with full CRUD for businesses and tags
-- POI search powered by AMap with click-to-pick location
-- Secure AMap API integration via server-side proxy (no key exposure to client)
-- JWT-based authentication with role-based access control
+- 交互式地图，每个商家标记使用自定义颜色
+- 标签筛选（菜系类型、是否吃过等）
+- 管理后台，支持商家和标签的完整增删改查
+- 基于高德 POI 的搜索和点击地图选点
+- 安全的高德 API 集成，通过服务端代理，密钥不暴露给客户端
+- 基于 JWT 的认证，支持角色权限控制
 
-## Quick Start / 快速开始
+## 快速开始
 
-### Docker (Recommended / 推荐)
+### Docker（推荐）
 
 ```bash
-# 1. Clone the repo
+# 1. 克隆仓库
 git clone <repo-url> && cd map-collection-next
 
-# 2. Create .env from example
+# 2. 创建环境配置
 cp .env.example .env
-# Fill in your AMap API keys and NEXTAUTH_SECRET
+# 填入高德 API Key 和 NEXTAUTH_SECRET
 
-# 3. Start services
+# 3. 启动服务
 docker compose up -d --build
 
-# 4. Import data (optional)
+# 4. 导入数据（可选）
 docker compose exec app npx tsx scripts/import-mysql.ts
 ```
 
-Visit http://localhost:3000
+访问 http://localhost:3000
 
-### Local Development / 本地开发
+### 本地开发
 
 ```bash
-# Prerequisites: Node.js 20+, PostgreSQL 16+
+# 前置条件：Node.js 20+、PostgreSQL 16+
 
-# 1. Install dependencies
+# 1. 安装依赖
 npm install
 
-# 2. Configure environment
+# 2. 配置环境变量
 cp .env.example .env
 
-# 3. Setup database
+# 3. 初始化数据库
 npx prisma migrate dev
 npm run db:seed
 
-# 4. Start dev server
+# 4. 启动开发服务器
 npm run dev
 ```
 
-## Environment Variables / 环境变量
+## 环境变量
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | Database connection (used by Prisma adapter) | Yes |
-| `NEXTAUTH_URL` | App URL (e.g. `http://localhost:3000`) | Yes |
-| `NEXTAUTH_SECRET` | JWT signing secret (`openssl rand -base64 32`) | Yes |
-| `AMAP_JS_API_KEY` | AMap JS API key (Web端) | Yes |
-| `AMAP_SERVER_API_KEY` | AMap Web Service key (Web服务) | Yes |
-| `AMAP_SECURITY_KEY` | AMap security key (jscode) | Yes |
+| 变量 | 说明 | 必填 |
+|------|------|------|
+| `DATABASE_URL` | PostgreSQL 连接字符串 | 是 |
+| `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | 数据库连接参数（Prisma adapter 使用） | 是 |
+| `NEXTAUTH_URL` | 应用地址（如 `http://localhost:3000`） | 是 |
+| `NEXTAUTH_SECRET` | JWT 签名密钥（`openssl rand -base64 32`） | 是 |
+| `AMAP_JS_API_KEY` | 高德 JS API Key（Web端） | 是 |
+| `AMAP_SERVER_API_KEY` | 高德 Web 服务 Key（Web服务） | 是 |
+| `AMAP_SECURITY_KEY` | 高德安全密钥（jscode） | 是 |
 
-## AMap API Key Setup / 高德 Key 配置
+## 高德 Key 配置
 
-You need two API keys from [AMap Open Platform](https://lbs.amap.com/):
+在 [高德开放平台](https://lbs.amap.com/) 申请以下密钥：
 
-1. **JS API Key** (Web端) - Used by the frontend map SDK
-2. **Server API Key** (Web服务) - Used by the backend for geocoding/POI search
-3. **Security Key** (安全密钥) - Bound to the JS API key, used server-side via proxy
+1. **JS API Key**（Web端）—— 前端地图 SDK 使用
+2. **Server API Key**（Web服务）—— 后端地理编码 / POI 搜索使用
+3. **安全密钥**（jscode）—— 绑定 JS API Key，通过服务端代理使用
 
-The security key is never exposed to the client. All secure requests are proxied through `/_AMapService` on the server.
+安全密钥不会暴露给客户端。所有安全请求通过 `/_AMapService` 服务端代理转发。
 
-## Project Structure / 项目结构
+## 项目结构
 
 ```
 src/
 ├── app/
-│   ├── page.tsx              # Public map page
-│   ├── login/                # Login page
-│   ├── admin/                # Admin dashboard (auth required)
-│   │   ├── page.tsx          # Business management
-│   │   └── tags/page.tsx     # Tag management
+│   ├── page.tsx              # 公开地图页
+│   ├── login/                # 登录页
+│   ├── admin/                # 管理后台（需认证）
+│   │   ├── page.tsx          # 商家管理
+│   │   └── tags/page.tsx     # 标签管理
 │   └── api/
-│       ├── auth/             # NextAuth routes
-│       ├── businesses/       # Business CRUD API
-│       ├── tags/             # Tag CRUD API
+│       ├── auth/             # NextAuth 路由
+│       ├── businesses/       # 商家 CRUD API
+│       ├── tags/             # 标签 CRUD API
 │       └── amap/
-│           ├── config/       # JS API key config
-│           ├── search/       # POI search proxy
-│           ├── geocode/      # Reverse geocoding proxy
-│           └── service/      # AMap JS SDK security proxy
+│           ├── config/       # JS API Key 配置
+│           ├── search/       # POI 搜索代理
+│           ├── geocode/      # 逆地理编码代理
+│           └── service/      # 高德 JS SDK 安全代理
 ├── components/
-│   ├── map/                  # AMap components (container, picker, search)
-│   ├── business/             # Business cards, forms, table
-│   ├── tag/                  # Tag badges, filters, forms
-│   └── layout/               # Header, sidebar
+│   ├── map/                  # 地图组件（容器、选点、搜索）
+│   ├── business/             # 商家卡片、表单、表格
+│   ├── tag/                  # 标签徽章、筛选、表单
+│   └── layout/               # 头部导航、侧边栏
 ├── lib/
-│   ├── prisma.ts             # Prisma client singleton
-│   ├── auth.ts               # NextAuth configuration
-│   ├── amap.ts               # AMap server-side API client
-│   └── validations/          # Zod schemas
-├── types/                    # TypeScript type definitions
-└── middleware.ts             # Route protection
+│   ├── prisma.ts             # Prisma 客户端单例
+│   ├── auth.ts               # NextAuth 配置
+│   ├── amap.ts               # 高德服务端 API 客户端
+│   └── validations/          # Zod 校验 Schema
+├── types/                    # TypeScript 类型定义
+└── middleware.ts             # 路由鉴权中间件
 ```
 
-## Default Credentials / 默认账号
+## 默认账号
 
-- Username: `admin`
-- Password: `admin123`
+- 用户名：`admin`
+- 密码：`admin123`
 
-**Please change the password after first login.**
+**首次登录后请立即修改密码。**
 
-## License / 许可
+## 许可
 
 MIT
