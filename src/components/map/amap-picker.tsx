@@ -85,8 +85,7 @@ export function AmapPicker({ onLocationSelect }: AmapPickerProps) {
     <div>
       <div
         ref={mapRef}
-        className="w-full rounded-lg border-2 border-gray-200 overflow-hidden"
-        style={{ height: "300px" }}
+        className="w-full h-[40vh] md:h-[300px] rounded-lg border-2 border-gray-200 overflow-hidden"
       />
       <p className="text-sm text-gray-500 mt-2">
         点击地图选择位置，或使用搜索功能

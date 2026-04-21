@@ -102,8 +102,7 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
   return (
     <div
       ref={mapRef}
-      className="w-full rounded-xl border border-gray-200 overflow-hidden"
-      style={{ height: "600px" }}
+      className="w-full h-[50vh] lg:h-[600px] rounded-xl border border-gray-200 overflow-hidden"
     />
   );
 }

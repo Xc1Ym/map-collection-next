@@ -47,7 +47,7 @@ export function AdminPageClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h2 className="text-xl font-semibold">商家列表 ({businesses.length}家)</h2>
         <Button onClick={() => setShowAddForm(true)}>添加商家</Button>
       </div>

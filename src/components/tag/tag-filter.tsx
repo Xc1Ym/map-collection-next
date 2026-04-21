@@ -16,7 +16,7 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-full border-2 border-gray-200 px-5 py-3 text-base bg-white cursor-pointer focus:border-blue-400 focus:outline-none transition-colors"
+      className="w-full rounded-full border-2 border-gray-200 px-5 py-3 text-base bg-white cursor-pointer focus:border-blue-400 focus:outline-none transition-colors"
     >
       <option value="">所有分类</option>
       {tags.map((tag) => (

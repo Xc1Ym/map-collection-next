@@ -28,13 +28,14 @@ export function BusinessTable({
   }
 
   return (
+    <div className="overflow-x-auto -mx-6 px-6">
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>商家名称</TableHead>
           <TableHead>分类</TableHead>
           <TableHead>地址</TableHead>
-          <TableHead>添加时间</TableHead>
+          <TableHead className="hidden md:table-cell">添加时间</TableHead>
           <TableHead>操作</TableHead>
         </TableRow>
       </TableHeader>
@@ -50,7 +51,7 @@ export function BusinessTable({
               </div>
             </TableCell>
             <TableCell className="max-w-[200px] truncate">{b.address}</TableCell>
-            <TableCell className="text-sm text-gray-500">
+            <TableCell className="hidden md:table-cell text-sm text-gray-500">
               {new Date(b.createdAt).toLocaleDateString("zh-CN")}
             </TableCell>
             <TableCell>
@@ -71,5 +72,6 @@ export function BusinessTable({
         ))}
       </TableBody>
     </Table>
+    </div>
   );
 }
