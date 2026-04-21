@@ -10,7 +10,7 @@ export function SiteHeader() {
 
   return (
     <header className="flex justify-between items-center bg-white px-6 py-4 rounded-2xl shadow-sm border border-gray-100 mb-5">
-      <h1 className="text-2xl font-bold text-gray-900">地图收藏系统</h1>
+      <h1 className="text-2xl font-bold text-gray-900">美食收藏地图</h1>
       <div className="flex items-center gap-3">
         {session?.user ? (
           <>

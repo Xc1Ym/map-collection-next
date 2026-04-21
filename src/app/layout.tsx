@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "地图收藏系统",
-  description: "基于高德地图的商家收藏管理系统",
+  title: "美食收藏地图",
+  description: "基于高德地图的美食收藏管理系统",
 };
 
 export default function RootLayout({

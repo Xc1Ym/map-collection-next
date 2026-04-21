@@ -39,7 +39,7 @@ export function LoginForm() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">地图收藏系统</CardTitle>
+          <CardTitle className="text-2xl">美食收藏地图</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
