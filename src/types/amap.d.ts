@@ -17,5 +17,5 @@ declare namespace AMap {
 }
 
 interface Window {
-  _AMapSecurityConfig: { securityJsCode: string };
+  _AMapSecurityConfig: { securityJsCode?: string; serviceHost?: string };
 }

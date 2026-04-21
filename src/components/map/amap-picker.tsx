@@ -28,7 +28,7 @@ export function AmapPicker({ onLocationSelect }: AmapPickerProps) {
       .then((config) => {
         if (destroyed) return;
 
-        window._AMapSecurityConfig = { securityJsCode: config.securityJsCode };
+        window._AMapSecurityConfig = { serviceHost: window.location.origin + "/_AMapService" };
 
         return AMapLoader.load({
           key: config.apiKey,

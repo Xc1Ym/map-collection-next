@@ -11,10 +11,10 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
       - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=CHANGE_ME_IN_PRODUCTION
-      - AMAP_JS_API_KEY=${AMAP_JS_API_KEY:-demo}
-      - AMAP_SERVER_API_KEY=${AMAP_SERVER_API_KEY:-demo}
-      - AMAP_SECURITY_KEY=${AMAP_SECURITY_KEY:-demo}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - AMAP_JS_API_KEY=${AMAP_JS_API_KEY}
+      - AMAP_SERVER_API_KEY=${AMAP_SERVER_API_KEY}
+      - AMAP_SECURITY_KEY=${AMAP_SECURITY_KEY}
     depends_on:
       db:
         condition: service_healthy

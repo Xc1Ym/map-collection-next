@@ -30,9 +30,8 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
       .then((config) => {
         if (destroyed) return;
 
-        // 安全密钥必须在 load 之前设置
         window._AMapSecurityConfig = {
-          securityJsCode: config.securityJsCode,
+          serviceHost: window.location.origin + "/_AMapService",
         };
 
         return AMapLoader.load({
