@@ -4,16 +4,17 @@ import { StarRatingDisplay } from "@/components/ui/star-rating";
 
 interface BusinessCardProps {
   business: Business;
+  onClick?: () => void;
 }
 
-export function BusinessCard({ business }: BusinessCardProps) {
+export function BusinessCard({ business, onClick }: BusinessCardProps) {
   const accentColor = business.tags[0]?.color || "oklch(0.62 0.18 25)";
 
   return (
     <div
+      onClick={onClick}
       className="relative bg-white/95 p-5 pl-7 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-white/60 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden"
     >
-      {/* 左侧色条装饰 */}
       <div
         className="absolute left-0 top-3 bottom-3 w-1 rounded-full"
         style={{ backgroundColor: accentColor }}
@@ -50,6 +51,7 @@ export function BusinessCard({ business }: BusinessCardProps) {
           href={`https://uri.amap.com/marker?position=${business.longitude},${business.latitude}&name=${encodeURIComponent(business.name)}&coordinate=gaode&callnative=1`}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
           className="inline-flex items-center gap-1 rounded-xl px-3.5 py-1.5 text-xs font-semibold text-white transition-all hover:shadow-md"
           style={{ backgroundImage: "var(--brand-gradient)" }}
         >
