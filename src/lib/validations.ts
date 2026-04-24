@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const ratingSchema = z.number().min(0).max(5).multipleOf(0.5).optional().nullable();
+
 const latLngFinite = z.number().finite();
 const LAT_MIN = -90;
 const LAT_MAX = 90;
@@ -11,6 +13,8 @@ export const businessCreateSchema = z.object({
   address: z.string().min(1).max(500),
   latitude: latLngFinite.min(LAT_MIN).max(LAT_MAX),
   longitude: latLngFinite.min(LNG_MIN).max(LNG_MAX),
+  visited: z.boolean().optional().default(false),
+  rating: ratingSchema,
   description: z.string().max(500).optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
   website: z.string().max(255).optional().nullable(),
@@ -22,6 +26,8 @@ export const businessUpdateSchema = z.object({
   address: z.string().min(1).max(500),
   latitude: latLngFinite.min(LAT_MIN).max(LAT_MAX).optional(),
   longitude: latLngFinite.min(LNG_MIN).max(LNG_MAX).optional(),
+  visited: z.boolean().optional(),
+  rating: ratingSchema,
   description: z.string().max(500).optional().nullable(),
   phone: z.string().max(20).optional().nullable(),
   website: z.string().max(255).optional().nullable(),

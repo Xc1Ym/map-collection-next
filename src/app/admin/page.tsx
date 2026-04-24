@@ -15,6 +15,8 @@ export default async function AdminPage() {
     address: b.address,
     latitude: Number(b.latitude),
     longitude: Number(b.longitude),
+    visited: b.visited,
+    rating: b.rating !== null ? Number(b.rating) : null,
     description: b.description,
     phone: b.phone,
     website: b.website,

@@ -10,6 +10,8 @@ export interface Business {
   address: string;
   latitude: number;
   longitude: number;
+  visited: boolean;
+  rating: number | null;
   description: string | null;
   phone: string | null;
   website: string | null;

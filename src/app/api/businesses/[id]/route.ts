@@ -22,6 +22,7 @@ export async function GET(
       ...business,
       latitude: Number(business.latitude),
       longitude: Number(business.longitude),
+      rating: business.rating !== null ? Number(business.rating) : null,
       tagIds: business.tags.map((bt) => bt.tagId),
       tags: business.tags.map((bt) => ({
         id: bt.tag.id,
@@ -47,7 +48,7 @@ export async function PATCH(
     );
   }
 
-  const { name, address, latitude, longitude, description, phone, website, tagIds } = parsed.data;
+  const { name, address, latitude, longitude, visited, rating, description, phone, website, tagIds } = parsed.data;
 
   try {
     const business = await prisma.business.update({
@@ -56,6 +57,8 @@ export async function PATCH(
         name,
         address,
         ...(latitude != null && longitude != null ? { latitude, longitude } : {}),
+        ...(visited != null ? { visited } : {}),
+        rating: visited === false ? null : (rating != null ? rating : undefined),
         description,
         phone,
         website,

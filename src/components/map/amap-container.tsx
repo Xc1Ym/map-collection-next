@@ -9,8 +9,12 @@ interface AmapContainerProps {
   onMarkerClick?: (business: Business) => void;
 }
 
-function createMarkerContent(name: string, color: string) {
-  return `<div style="background-color:${color};padding:8px 12px;border-radius:6px;color:white;font-size:14px;font-weight:bold;min-width:80px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${name}</div>`;
+function createMarkerContent(name: string, color: string, visited: boolean, rating: number | null) {
+  const border = visited ? "border:2px solid #22c55e;" : "";
+  const badge = visited
+    ? `<span style="font-size:10px;font-weight:normal;opacity:0.9;">${rating != null ? "★".repeat(Math.round(rating)) : "已吃"}</span>`
+    : "";
+  return `<div style="background-color:${color};padding:8px 12px;border-radius:6px;color:white;font-size:14px;font-weight:bold;min-width:80px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);${border}">${name}${badge ? "<br/>" + badge : ""}</div>`;
 }
 
 export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps) {
@@ -22,7 +26,7 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
 
   // Stable key for businesses list to detect actual changes
   const businessKey = useMemo(
-    () => businesses.map((b) => `${b.id}:${b.tags.map((t) => t.color).join(",")}`).join("|"),
+    () => businesses.map((b) => `${b.id}:${b.tags.map((t) => t.color).join(",")}:${b.visited}:${b.rating}`).join("|"),
     [businesses]
   );
 
@@ -88,7 +92,7 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
       const marker = new AMap.Marker({
         position: new AMap.LngLat(b.longitude, b.latitude),
         title: b.name,
-        content: createMarkerContent(b.name, mainColor),
+        content: createMarkerContent(b.name, mainColor, b.visited, b.rating),
       });
 
       marker.on("click", () => {

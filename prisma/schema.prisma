@@ -39,6 +39,8 @@ model Business {
   address     String
   latitude    Decimal       @db.Decimal(10, 8)
   longitude   Decimal       @db.Decimal(11, 8)
+  visited     Boolean       @default(false)
+  rating      Decimal?      @db.Decimal(2, 1)
   description String?
   phone       String?       @db.VarChar(20)
   website     String?       @db.VarChar(255)

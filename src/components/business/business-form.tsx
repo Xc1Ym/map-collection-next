@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { StarRatingInput } from "@/components/ui/star-rating";
 import { AmapSearch } from "@/components/map/amap-search";
 import { toast } from "sonner";
 
@@ -40,6 +41,8 @@ export function BusinessForm({
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
     editBusiness?.tags?.map((t) => t.id) || []
   );
+  const [visited, setVisited] = useState(editBusiness?.visited ?? false);
+  const [rating, setRating] = useState<number | null>(editBusiness?.rating ?? null);
   const [loading, setLoading] = useState(false);
   const [locationSet, setLocationSet] = useState(!!editBusiness);
 
@@ -65,6 +68,12 @@ export function BusinessForm({
     },
     []
   );
+
+  function handleVisitedChange(checked: boolean | "indeterminate") {
+    const v = checked === true;
+    setVisited(v);
+    if (!v) setRating(null);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -95,6 +104,8 @@ export function BusinessForm({
           address,
           longitude,
           latitude,
+          visited,
+          rating: visited ? rating : null,
           tagIds: selectedTagIds,
         }),
       });
@@ -178,6 +189,21 @@ export function BusinessForm({
                     </label>
                   ))}
                 </div>
+              </div>
+              <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+                <label className="inline-flex items-center gap-2 cursor-pointer">
+                  <Checkbox
+                    checked={visited}
+                    onCheckedChange={handleVisitedChange}
+                  />
+                  <span className="text-sm font-medium">已吃过</span>
+                </label>
+                {visited && (
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">评分</label>
+                    <StarRatingInput value={rating} onChange={setRating} />
+                  </div>
+                )}
               </div>
             </div>
             <div className="space-y-2">

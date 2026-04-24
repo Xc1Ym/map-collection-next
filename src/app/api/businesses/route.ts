@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
     address: b.address,
     latitude: Number(b.latitude),
     longitude: Number(b.longitude),
+    visited: b.visited,
+    rating: b.rating !== null ? Number(b.rating) : null,
     description: b.description,
     phone: b.phone,
     website: b.website,
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, address, latitude, longitude, description, phone, website, tagIds } = parsed.data;
+  const { name, address, latitude, longitude, visited, rating, description, phone, website, tagIds } = parsed.data;
 
   const business = await prisma.business.create({
     data: {
@@ -54,6 +56,8 @@ export async function POST(request: NextRequest) {
       address,
       latitude,
       longitude,
+      visited,
+      rating: visited && rating != null ? rating : null,
       description,
       phone,
       website,

@@ -1,5 +1,6 @@
 import type { Business } from "@/types";
 import { TagBadge } from "@/components/tag/tag-badge";
+import { StarRatingDisplay } from "@/components/ui/star-rating";
 
 interface BusinessCardProps {
   business: Business;
@@ -8,7 +9,19 @@ interface BusinessCardProps {
 export function BusinessCard({ business }: BusinessCardProps) {
   return (
     <div className="bg-white p-5 rounded-xl border border-blue-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-      <h4 className="text-lg font-semibold text-gray-800 mb-2">{business.name}</h4>
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h4 className="text-lg font-semibold text-gray-800">{business.name}</h4>
+        {business.visited && (
+          <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+            已吃
+          </span>
+        )}
+      </div>
+      {business.visited && business.rating != null && (
+        <div className="mb-2">
+          <StarRatingDisplay rating={business.rating} />
+        </div>
+      )}
       <div className="flex flex-wrap gap-1.5 mb-2">
         {business.tags.length > 0 ? (
           business.tags.map((tag) => <TagBadge key={tag.id} tag={tag} />)

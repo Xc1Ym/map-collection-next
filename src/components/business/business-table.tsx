@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TagBadge } from "@/components/tag/tag-badge";
+import { StarRatingDisplay } from "@/components/ui/star-rating";
 import { Button } from "@/components/ui/button";
 
 interface BusinessTableProps {
@@ -33,6 +34,8 @@ export function BusinessTable({
       <TableHeader>
         <TableRow>
           <TableHead>商家名称</TableHead>
+          <TableHead>状态</TableHead>
+          <TableHead>评分</TableHead>
           <TableHead>分类</TableHead>
           <TableHead>地址</TableHead>
           <TableHead className="hidden md:table-cell">添加时间</TableHead>
@@ -43,6 +46,20 @@ export function BusinessTable({
         {businesses.map((b) => (
           <TableRow key={b.id}>
             <TableCell className="font-medium">{b.name}</TableCell>
+            <TableCell>
+              {b.visited ? (
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                  已吃
+                </span>
+              ) : (
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500">
+                  未吃
+                </span>
+              )}
+            </TableCell>
+            <TableCell>
+              <StarRatingDisplay rating={b.rating} size={14} />
+            </TableCell>
             <TableCell>
               <div className="flex flex-wrap gap-1">
                 {b.tags.map((tag) => (
