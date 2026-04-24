@@ -29,7 +29,6 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstanceRef = useRef<AMap.Map | null>(null);
     const markersRef = useRef<Map<number, any>>(new Map());
-    const clusterRef = useRef<any>(null);
     const onMarkerClickRef = useRef(onMarkerClick);
     const AMapRef = useRef<any>(null);
     const [loaded, setLoaded] = useState(false);
@@ -71,7 +70,7 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
           return AMapLoader.load({
             key: config.apiKey,
             version: config.mapVersion,
-            plugins: ["AMap.Geolocation", "AMap.MarkerCluster"],
+            plugins: ["AMap.Geolocation"],
           });
         })
         .then((AMap) => {
@@ -85,14 +84,22 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
           });
           mapInstanceRef.current = map;
 
-          // Auto geolocation
-          const geolocation = new AMap.Geolocation({
-            enableHighAccuracy: true,
-            timeout: 8000,
-            zoomToAccuracy: true,
-          });
-          map.addControl(geolocation);
-          geolocation.getCurrentPosition();
+          // Geolocation: just show a blue dot, don't zoom/pan
+          try {
+            const geolocation = new AMap.Geolocation({
+              enableHighAccuracy: true,
+              timeout: 8000,
+              zoomToAccuracy: false,
+              showButton: false,
+              showMarker: true,
+              showCircle: true,
+              panToLocation: false,
+            });
+            map.addControl(geolocation);
+            geolocation.getCurrentPosition();
+          } catch {
+            // Geolocation not supported, ignore
+          }
 
           setLoaded(true);
         })
@@ -102,10 +109,6 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
 
       return () => {
         destroyed = true;
-        if (clusterRef.current) {
-          clusterRef.current.setMap(null);
-          clusterRef.current = null;
-        }
         if (mapInstanceRef.current) {
           mapInstanceRef.current.destroy();
           mapInstanceRef.current = null;
@@ -115,17 +118,11 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
       };
     }, []);
 
-    // Update markers + cluster
+    // Update markers (no clustering — direct add for reliability)
     useEffect(() => {
       const map = mapInstanceRef.current;
       const AMap = AMapRef.current;
       if (!map || !loaded || !AMap) return;
-
-      // Clear old cluster
-      if (clusterRef.current) {
-        clusterRef.current.setMap(null);
-        clusterRef.current = null;
-      }
 
       // Clear old markers
       markersRef.current.forEach((m) => map.remove(m));
@@ -133,7 +130,7 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
 
       const isActive = (id: number) => activeBusiness?.id === id;
 
-      // Create markers
+      // Create and add markers
       businesses.forEach((b) => {
         const mainColor = b.tags[0]?.color || "#E8614D";
         const marker = new AMap.Marker({
@@ -155,40 +152,9 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
           }
         });
 
+        map.add(marker);
         markersRef.current.set(b.id, marker);
       });
-
-      const markerArray = Array.from(markersRef.current.values());
-
-      // Use MarkerCluster when many businesses, plain markers when few
-      if (markerArray.length > 10 && AMap.MarkerCluster) {
-        const cluster = new AMap.MarkerCluster(map, markerArray, {
-          gridSize: 60,
-          maxZoom: 16,
-          renderMarker: (context: any) => {
-            const data = context.clusterData?.[0];
-            if (data) {
-              const b = businesses.find((biz) => biz.id === data.id);
-              if (b) {
-                const mainColor = b.tags[0]?.color || "#E8614D";
-                context.marker.setContent(createMarkerContent(b.name, mainColor, b.visited, b.rating, isActive(b.id)));
-                context.marker.setOffset(new AMap.Pixel(-50, -30));
-              }
-            }
-          },
-          renderClusterMarker: (context: any) => {
-            const count = context.count;
-            const size = Math.max(36, Math.min(56, 36 + count * 2));
-            context.marker.setContent(
-              `<div style="width:${size}px;height:${size}px;border-radius:50%;background:linear-gradient(135deg,#E8614D,#FF9F43);color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:${size > 44 ? 16 : 13}px;box-shadow:0 4px 12px rgba(232,97,77,0.35);">${count}</div>`
-            );
-            context.marker.setOffset(new AMap.Pixel(-size / 2, -size / 2));
-          },
-        });
-        clusterRef.current = cluster;
-      } else {
-        markerArray.forEach((m) => map.add(m));
-      }
 
       if (businesses.length > 0 && !activeBusiness) {
         map.setCenter([businesses[0].longitude, businesses[0].latitude]);
