@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTags } from "@/hooks/use-tags";
 
 interface TagFilterProps {
@@ -11,37 +11,32 @@ interface TagFilterProps {
 export function TagFilter({ value, onChange }: TagFilterProps) {
   const { tags, isLoading } = useTags();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
-  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
-
-  const updatePos = useCallback(() => {
-    if (!btnRef.current) return;
-    const rect = btnRef.current.getBoundingClientRect();
-    setMenuPos({
-      top: rect.bottom + 6,
-      left: Math.min(rect.left, window.innerWidth - 160),
-    });
-  }, []);
 
   useEffect(() => {
     if (!moreOpen) return;
-    updatePos();
     function handleClick(e: MouseEvent) {
       if (btnRef.current && btnRef.current.contains(e.target as Node)) return;
       setMoreOpen(false);
     }
-    function handleScroll() {
-      updatePos();
+    function handleResize() {
+      if (!btnRef.current) return;
+      const rect = btnRef.current.getBoundingClientRect();
+      setMenuPos({
+        top: rect.bottom + 6,
+        left: Math.min(rect.left, window.innerWidth - 160),
+      });
     }
     document.addEventListener("mousedown", handleClick);
-    window.addEventListener("scroll", handleScroll, true);
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleResize, true);
     return () => {
       document.removeEventListener("mousedown", handleClick);
-      window.removeEventListener("scroll", handleScroll, true);
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleResize, true);
     };
-  }, [moreOpen, updatePos]);
+  }, [moreOpen]);
 
   if (isLoading) return null;
 
@@ -49,6 +44,16 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
   const visibleTags = tags.slice(0, VISIBLE);
   const restTags = tags.slice(VISIBLE);
   const selectedInRest = restTags.find((t) => t.name === value);
+
+  function handleMoreClick() {
+    if (!btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    setMenuPos({
+      top: rect.bottom + 6,
+      left: Math.min(rect.left, window.innerWidth - 160),
+    });
+    setMoreOpen((prev) => !prev);
+  }
 
   return (
     <>
@@ -87,7 +92,7 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
           <button
             ref={btnRef}
             type="button"
-            onClick={() => setMoreOpen(!moreOpen)}
+            onClick={handleMoreClick}
             className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all cursor-pointer border flex items-center gap-1.5 whitespace-nowrap ${
               selectedInRest
                 ? "text-white border-transparent shadow-sm"
@@ -103,7 +108,7 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
         )}
       </div>
 
-      {moreOpen && menuPos && typeof window !== "undefined" && (
+      {moreOpen && (
         <div
           className="fixed bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[oklch(0.91_0.02_75)] py-1.5 z-[9999] min-w-[140px] max-h-[240px] overflow-y-auto"
           style={{ top: menuPos.top, left: menuPos.left }}
@@ -116,7 +121,7 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
                 onChange(tag.name === value ? "" : tag.name);
                 setMoreOpen(false);
               }}
-              className="w-full text-left px-4 py-2.5 text-sm hover:bg-[oklch(0.955_0.02_75)] transition-colors flex items-center gap-2.5 cursor-pointer"
+              className="w-full text-left px-4 py-2.5 text-sm hover:bg-[oklch(0.955_0.02_75)] transition-colors flex items-center gap-2.5 cursor-pointer whitespace-nowrap"
             >
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
               <span className={value === tag.name ? "font-semibold text-[oklch(0.25_0.02_60)]" : "text-[oklch(0.40_0.02_60)]"}>
