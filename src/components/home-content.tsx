@@ -7,6 +7,22 @@ import { BusinessList } from "@/components/business/business-list";
 import { AmapContainer } from "@/components/map/amap-container";
 import { useBusinesses } from "@/hooks/use-businesses";
 
+function VisitedToggle({ active, onChange }: { active: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!active)}
+      className={`rounded-full px-5 py-3 text-base font-medium transition-all cursor-pointer border-2 ${
+        active
+          ? "bg-green-500 border-green-500 text-white shadow-sm"
+          : "bg-white border-gray-200 text-gray-700 hover:border-green-300"
+      }`}
+    >
+      {active ? "已吃" : "只看已吃"}
+    </button>
+  );
+}
+
 export default function HomeContent() {
   const [tagFilter, setTagFilter] = useState("");
   const [visitedOnly, setVisitedOnly] = useState(false);
@@ -24,15 +40,7 @@ export default function HomeContent() {
         <div className="flex-1">
           <TagFilter value={tagFilter} onChange={setTagFilter} />
         </div>
-        <label className="inline-flex items-center gap-2 cursor-pointer select-none whitespace-nowrap">
-          <input
-            type="checkbox"
-            checked={visitedOnly}
-            onChange={(e) => setVisitedOnly(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-          />
-          <span className="text-sm font-medium text-gray-700">只看已吃</span>
-        </label>
+        <VisitedToggle active={visitedOnly} onChange={setVisitedOnly} />
       </div>
 
       {/* 桌面端：三栏布局 */}
@@ -55,15 +63,7 @@ export default function HomeContent() {
             <div className="flex-1">
               <TagFilter value={tagFilter} onChange={setTagFilter} />
             </div>
-            <label className="inline-flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap bg-white rounded-full border-2 border-gray-200 px-4 py-3 text-sm font-medium text-gray-700">
-              <input
-                type="checkbox"
-                checked={visitedOnly}
-                onChange={(e) => setVisitedOnly(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
-              />
-              已吃
-            </label>
+            <VisitedToggle active={visitedOnly} onChange={setVisitedOnly} />
           </div>
         </div>
 
