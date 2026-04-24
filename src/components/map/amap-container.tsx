@@ -84,7 +84,7 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
           });
           mapInstanceRef.current = map;
 
-          // Geolocation: just show a blue dot, don't zoom/pan
+          // Geolocation: pan to user, show blue dot
           try {
             const geolocation = new AMap.Geolocation({
               enableHighAccuracy: true,
@@ -93,7 +93,7 @@ export const AmapContainer = forwardRef<AmapContainerRef, AmapContainerProps>(
               showButton: false,
               showMarker: true,
               showCircle: true,
-              panToLocation: false,
+              panToLocation: true,
             });
             map.addControl(geolocation);
             geolocation.getCurrentPosition();
