@@ -12,13 +12,13 @@ function VisitedToggle({ active, onChange }: { active: boolean; onChange: (v: bo
     <button
       type="button"
       onClick={() => onChange(!active)}
-      className={`rounded-full px-5 py-3 text-base font-medium transition-all cursor-pointer border-2 ${
+      className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-all cursor-pointer border ${
         active
-          ? "bg-green-500 border-green-500 text-white shadow-sm"
-          : "bg-white border-gray-200 text-gray-700 hover:border-green-300"
+          ? "bg-[oklch(0.70_0.15_165)] border-[oklch(0.70_0.15_165)] text-white shadow-sm"
+          : "bg-white border-[oklch(0.88_0.04_50)] text-[oklch(0.45_0.02_60)] hover:border-[oklch(0.70_0.15_165)]"
       }`}
     >
-      {active ? "已吃" : "只看已吃"}
+      {active ? "✓ 已吃" : "只看已吃"}
     </button>
   );
 }
@@ -32,11 +32,11 @@ export default function HomeContent() {
   );
 
   return (
-    <div className="max-w-[1400px] mx-auto p-3 md:p-5">
+    <div className="max-w-[1400px] mx-auto p-4 md:p-6">
       <SiteHeader />
 
       {/* 桌面端：筛选栏 */}
-      <div className="hidden lg:flex items-center gap-4 mb-5 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+      <div className="hidden lg:flex items-center gap-4 mb-6 bg-white/80 backdrop-blur-xl p-5 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-white/60">
         <div className="flex-1">
           <TagFilter value={tagFilter} onChange={setTagFilter} />
         </div>
@@ -44,9 +44,9 @@ export default function HomeContent() {
       </div>
 
       {/* 桌面端：三栏布局 */}
-      <div className="hidden lg:grid lg:grid-cols-3 gap-5">
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 max-h-[600px] overflow-y-auto">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">商家列表</h3>
+      <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-white/60 max-h-[600px] overflow-y-auto">
+          <h3 className="text-lg font-semibold text-[oklch(0.30_0.02_60)] mb-4">商家列表</h3>
           <BusinessList businesses={businesses} isLoading={isLoading} />
         </div>
         <div className="lg:col-span-2">
@@ -55,20 +55,19 @@ export default function HomeContent() {
       </div>
 
       {/* 移动端：地图 + 浮层 + 列表 */}
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden space-y-5">
         <div className="relative">
           <AmapContainer businesses={businesses} />
-          {/* 筛选浮在地图上方 */}
           <div className="absolute top-3 left-3 right-3 z-10 flex gap-2">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <TagFilter value={tagFilter} onChange={setTagFilter} />
             </div>
             <VisitedToggle active={visitedOnly} onChange={setVisitedOnly} />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">商家列表</h3>
+        <div className="bg-white/90 backdrop-blur-sm p-5 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-white/60">
+          <h3 className="text-lg font-semibold text-[oklch(0.30_0.02_60)] mb-3">商家列表</h3>
           <BusinessList businesses={businesses} isLoading={isLoading} />
         </div>
       </div>

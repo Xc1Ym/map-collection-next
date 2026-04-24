@@ -10,11 +10,11 @@ interface AmapContainerProps {
 }
 
 function createMarkerContent(name: string, color: string, visited: boolean, rating: number | null) {
-  const border = visited ? "border:2px solid #22c55e;" : "";
+  const border = visited ? "border:2px solid #00B894;" : "";
   const badge = visited
     ? `<span style="font-size:10px;font-weight:normal;opacity:0.9;">${rating != null ? "★".repeat(Math.round(rating)) : "已吃"}</span>`
     : "";
-  return `<div style="background-color:${color};padding:8px 12px;border-radius:6px;color:white;font-size:14px;font-weight:bold;min-width:80px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);${border}">${name}${badge ? "<br/>" + badge : ""}</div>`;
+  return `<div style="background-color:${color};padding:8px 14px;border-radius:10px;color:white;font-size:14px;font-weight:bold;min-width:80px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);${border}">${name}${badge ? "<br/>" + badge : ""}</div>`;
 }
 
 export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps) {
@@ -88,7 +88,7 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
 
     // Create new markers
     businesses.forEach((b) => {
-      const mainColor = b.tags[0]?.color || "#3498db";
+      const mainColor = b.tags[0]?.color || "#E8614D";
       const marker = new AMap.Marker({
         position: new AMap.LngLat(b.longitude, b.latitude),
         title: b.name,
@@ -120,7 +120,7 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
   return (
     <div
       ref={mapRef}
-      className="w-full h-[50vh] lg:h-[600px] rounded-xl border border-gray-200 overflow-hidden"
+      className="w-full h-[50vh] lg:h-[600px] rounded-2xl border border-white/60 shadow-[0_1px_3px_rgba(0,0,0,0.06)] overflow-hidden"
     />
   );
 }

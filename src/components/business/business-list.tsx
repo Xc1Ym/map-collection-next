@@ -9,19 +9,19 @@ interface BusinessListProps {
 export function BusinessList({ businesses, isLoading }: BusinessListProps) {
   if (isLoading) {
     return (
-      <div className="text-center text-gray-400 py-8 italic">加载中...</div>
+      <div className="text-center text-[oklch(0.60_0.02_60)] py-8 italic">加载中...</div>
     );
   }
 
   if (businesses.length === 0) {
     return (
-      <div className="text-center text-gray-400 py-8">暂无商家数据</div>
+      <div className="text-center text-[oklch(0.60_0.02_60)] py-8">暂无商家数据</div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="text-sm font-semibold text-gray-600">
+      <div className="text-sm font-semibold text-[oklch(0.50_0.02_60)]">
         找到 {businesses.length} 个结果
       </div>
       {businesses.map((b) => (

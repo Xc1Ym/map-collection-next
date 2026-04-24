@@ -64,23 +64,28 @@ export default function TagsPage() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
-      <h2 className="text-xl font-semibold">标签管理</h2>
+    <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-white/60 space-y-6">
+      <h2 className="text-xl font-semibold text-[oklch(0.25_0.02_60)]">标签管理</h2>
 
       <form onSubmit={handleAdd} className="flex gap-3">
         <Input
           value={newTagName}
           onChange={(e) => setNewTagName(e.target.value)}
           placeholder="新标签名称"
-          className="max-w-xs"
+          className="max-w-xs rounded-xl border-[oklch(0.88_0.04_50)]"
         />
-        <Button type="submit" disabled={loading}>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="text-white rounded-xl"
+          style={{ backgroundImage: "var(--brand-gradient)" }}
+        >
           {loading ? "添加中..." : "添加标签"}
         </Button>
       </form>
 
       {isLoading ? (
-        <p className="text-gray-400">加载中...</p>
+        <p className="text-[oklch(0.60_0.02_60)]">加载中...</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {tags.map((tag) => (

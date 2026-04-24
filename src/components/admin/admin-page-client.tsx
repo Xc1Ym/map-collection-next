@@ -55,8 +55,14 @@ export function AdminPageClient({
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 className="text-xl font-semibold">商家列表 ({businesses.length}家)</h2>
-        <Button onClick={() => setShowAddForm(true)}>添加商家</Button>
+        <h2 className="text-xl font-semibold text-[oklch(0.25_0.02_60)]">商家列表 ({businesses.length}家)</h2>
+        <Button
+          onClick={() => setShowAddForm(true)}
+          className="text-white rounded-xl"
+          style={{ backgroundImage: "var(--brand-gradient)" }}
+        >
+          添加商家
+        </Button>
       </div>
 
       <BusinessTable

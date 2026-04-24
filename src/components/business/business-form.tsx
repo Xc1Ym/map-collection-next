@@ -170,10 +170,10 @@ export function BusinessForm({
                   {tags.map((tag) => (
                     <label
                       key={tag.id}
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border-2 cursor-pointer transition-all ${
                         selectedTagIds.includes(tag.id)
-                          ? "border-blue-400 bg-blue-50"
-                          : "border-gray-200 bg-white hover:border-gray-300"
+                          ? "border-[oklch(0.62_0.18_25)] bg-[oklch(0.95_0.06_30)]"
+                          : "border-[oklch(0.88_0.04_50)] bg-white hover:border-[oklch(0.75_0.12_40)]"
                       }`}
                     >
                       <Checkbox
@@ -190,7 +190,7 @@ export function BusinessForm({
                   ))}
                 </div>
               </div>
-              <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+              <div className="space-y-3 rounded-xl border border-[oklch(0.88_0.04_50)] p-3">
                 <label className="inline-flex items-center gap-2 cursor-pointer">
                   <Checkbox
                     checked={visited}
@@ -217,10 +217,20 @@ export function BusinessForm({
             </div>
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-xl border-[oklch(0.88_0.04_50)] text-[oklch(0.40_0.05_40)] hover:bg-[oklch(0.935_0.05_50)]"
+            >
               取消
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="text-white rounded-xl"
+              style={{ backgroundImage: "var(--brand-gradient)" }}
+            >
               {loading ? "处理中..." : isEdit ? "保存修改" : "添加商家"}
             </Button>
           </div>

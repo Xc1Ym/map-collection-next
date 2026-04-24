@@ -25,34 +25,34 @@ export function BusinessTable({
   onDelete,
 }: BusinessTableProps) {
   if (businesses.length === 0) {
-    return <p className="text-gray-400 py-4">暂无商家数据</p>;
+    return <p className="text-[oklch(0.60_0.02_60)] py-4">暂无商家数据</p>;
   }
 
   return (
     <div className="overflow-x-auto -mx-6 px-6">
     <Table>
       <TableHeader>
-        <TableRow>
-          <TableHead>商家名称</TableHead>
-          <TableHead>状态</TableHead>
-          <TableHead>评分</TableHead>
-          <TableHead>分类</TableHead>
-          <TableHead>地址</TableHead>
-          <TableHead className="hidden md:table-cell">添加时间</TableHead>
-          <TableHead>操作</TableHead>
+        <TableRow className="border-b border-[oklch(0.91_0.02_75)]">
+          <TableHead className="text-[oklch(0.45_0.02_60)]">商家名称</TableHead>
+          <TableHead className="text-[oklch(0.45_0.02_60)]">状态</TableHead>
+          <TableHead className="text-[oklch(0.45_0.02_60)]">评分</TableHead>
+          <TableHead className="text-[oklch(0.45_0.02_60)]">分类</TableHead>
+          <TableHead className="text-[oklch(0.45_0.02_60)]">地址</TableHead>
+          <TableHead className="hidden md:table-cell text-[oklch(0.45_0.02_60)]">添加时间</TableHead>
+          <TableHead className="text-[oklch(0.45_0.02_60)]">操作</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {businesses.map((b) => (
-          <TableRow key={b.id}>
-            <TableCell className="font-medium">{b.name}</TableCell>
+          <TableRow key={b.id} className="border-b border-[oklch(0.94_0.01_75)]">
+            <TableCell className="font-medium text-[oklch(0.25_0.02_60)]">{b.name}</TableCell>
             <TableCell>
               {b.visited ? (
-                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-                  已吃
+                <span className="rounded-full bg-[oklch(0.92_0.06_165)] px-2.5 py-0.5 text-xs font-semibold text-[oklch(0.45_0.12_165)]">
+                  ✓ 已吃
                 </span>
               ) : (
-                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500">
+                <span className="rounded-full bg-[oklch(0.95_0.02_75)] px-2.5 py-0.5 text-xs font-semibold text-[oklch(0.55_0.02_60)]">
                   未吃
                 </span>
               )}
@@ -67,18 +67,24 @@ export function BusinessTable({
                 ))}
               </div>
             </TableCell>
-            <TableCell className="max-w-[200px] truncate">{b.address}</TableCell>
-            <TableCell className="hidden md:table-cell text-sm text-gray-500">
+            <TableCell className="max-w-[200px] truncate text-[oklch(0.50_0.02_60)]">{b.address}</TableCell>
+            <TableCell className="hidden md:table-cell text-sm text-[oklch(0.55_0.02_60)]">
               {new Date(b.createdAt).toLocaleDateString("zh-CN")}
             </TableCell>
             <TableCell>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => onEdit(b)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onEdit(b)}
+                  className="rounded-xl border-[oklch(0.88_0.04_50)] text-[oklch(0.40_0.05_40)] hover:bg-[oklch(0.935_0.05_50)]"
+                >
                   修改
                 </Button>
                 <Button
                   size="sm"
                   variant="destructive"
+                  className="rounded-xl"
                   onClick={() => onDelete(b.id)}
                 >
                   删除

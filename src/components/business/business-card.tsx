@@ -7,13 +7,23 @@ interface BusinessCardProps {
 }
 
 export function BusinessCard({ business }: BusinessCardProps) {
+  const accentColor = business.tags[0]?.color || "oklch(0.62 0.18 25)";
+
   return (
-    <div className="bg-white p-5 rounded-xl border border-blue-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+    <div
+      className="relative bg-white/95 p-5 pl-7 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-white/60 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-200 cursor-pointer overflow-hidden"
+    >
+      {/* 左侧色条装饰 */}
+      <div
+        className="absolute left-0 top-3 bottom-3 w-1 rounded-full"
+        style={{ backgroundColor: accentColor }}
+      />
+
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h4 className="text-lg font-semibold text-gray-800">{business.name}</h4>
+        <h4 className="text-lg font-semibold text-[oklch(0.25_0.02_60)]">{business.name}</h4>
         {business.visited && (
-          <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
-            已吃
+          <span className="shrink-0 rounded-full bg-[oklch(0.92_0.06_165)] px-2.5 py-0.5 text-xs font-semibold text-[oklch(0.45_0.12_165)]">
+            ✓ 已吃
           </span>
         )}
       </div>
@@ -26,21 +36,22 @@ export function BusinessCard({ business }: BusinessCardProps) {
         {business.tags.length > 0 ? (
           business.tags.map((tag) => <TagBadge key={tag.id} tag={tag} />)
         ) : (
-          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white bg-gray-400">
+          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white bg-[oklch(0.65_0.02_60)]">
             未分类
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-600">{business.address}</p>
+      <p className="text-sm text-[oklch(0.45_0.02_60)]">{business.address}</p>
       {business.phone && (
-        <p className="text-sm text-gray-500 mt-1">电话: {business.phone}</p>
+        <p className="text-sm text-[oklch(0.55_0.02_60)] mt-1">电话: {business.phone}</p>
       )}
       <div className="mt-3">
         <a
           href={`https://uri.amap.com/marker?position=${business.longitude},${business.latitude}&name=${encodeURIComponent(business.name)}&coordinate=gaode&callnative=1`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-md bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 transition-colors"
+          className="inline-flex items-center gap-1 rounded-xl px-3.5 py-1.5 text-xs font-semibold text-white transition-all hover:shadow-md"
+          style={{ backgroundImage: "var(--brand-gradient)" }}
         >
           高德地图导航
         </a>
