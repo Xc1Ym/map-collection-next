@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useTags } from "@/hooks/use-tags";
 
 interface TagFilterProps {
@@ -108,7 +109,7 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
         )}
       </div>
 
-      {moreOpen && (
+      {moreOpen && createPortal(
         <div
           className="fixed bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[oklch(0.91_0.02_75)] py-1.5 z-[9999] min-w-[140px] max-h-[240px] overflow-y-auto"
           style={{ top: menuPos.top, left: menuPos.left }}
@@ -129,7 +130,8 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
               </span>
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
