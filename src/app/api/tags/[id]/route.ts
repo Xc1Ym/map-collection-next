@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { tagUpdateSchema } from "@/lib/validations";
 
 export async function PATCH(
   request: NextRequest,
@@ -7,16 +8,23 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const { name, color } = body;
+  const parsed = tagUpdateSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues.map((i) => i.message).join("; ") },
+      { status: 400 }
+    );
+  }
 
   try {
     const tag = await prisma.tag.update({
       where: { id: parseInt(id) },
-      data: { ...(name && { name }), ...(color && { color }) },
+      data: parsed.data,
     });
     return NextResponse.json({ success: true, data: tag });
   } catch {
-    return NextResponse.json({ error: "更新失败" }, { status: 500 });
+    return NextResponse.json({ error: "标签不存在或更新失败" }, { status: 404 });
   }
 }
 
@@ -30,6 +38,6 @@ export async function DELETE(
     await prisma.tag.delete({ where: { id: parseInt(id) } });
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "删除失败" }, { status: 500 });
+    return NextResponse.json({ error: "标签不存在或删除失败" }, { status: 404 });
   }
 }

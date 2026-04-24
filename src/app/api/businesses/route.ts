@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { businessCreateSchema } from "@/lib/validations";
 
 export async function GET(request: NextRequest) {
   const tag = request.nextUrl.searchParams.get("tag");
@@ -36,11 +37,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { name, address, latitude, longitude, description, phone, website, tagIds } = body;
+  const parsed = businessCreateSchema.safeParse(body);
 
-  if (!name || !address || !latitude || !longitude) {
-    return NextResponse.json({ error: "请填写必填字段" }, { status: 400 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues.map((i) => i.message).join("; ") },
+      { status: 400 }
+    );
   }
+
+  const { name, address, latitude, longitude, description, phone, website, tagIds } = parsed.data;
 
   const business = await prisma.business.create({
     data: {
@@ -52,7 +58,7 @@ export async function POST(request: NextRequest) {
       phone,
       website,
       tags: {
-        create: (tagIds as number[]).map((tagId) => ({ tagId })),
+        create: tagIds.map((tagId) => ({ tagId })),
       },
     },
     include: { tags: { include: { tag: true } } },

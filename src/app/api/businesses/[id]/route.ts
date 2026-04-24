@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { businessUpdateSchema } from "@/lib/validations";
 
 export async function GET(
   _request: NextRequest,
@@ -37,11 +38,16 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const { name, address, latitude, longitude, description, phone, website, tagIds } = body;
+  const parsed = businessUpdateSchema.safeParse(body);
 
-  if (!name || !address) {
-    return NextResponse.json({ error: "请填写必填字段" }, { status: 400 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues.map((i) => i.message).join("; ") },
+      { status: 400 }
+    );
   }
+
+  const { name, address, latitude, longitude, description, phone, website, tagIds } = parsed.data;
 
   try {
     const business = await prisma.business.update({
@@ -56,11 +62,10 @@ export async function PATCH(
       },
     });
 
-    // 替换标签关联
     if (tagIds) {
       await prisma.businessTag.deleteMany({ where: { businessId: business.id } });
       await prisma.businessTag.createMany({
-        data: (tagIds as number[]).map((tagId) => ({
+        data: tagIds.map((tagId) => ({
           businessId: business.id,
           tagId,
         })),
@@ -69,7 +74,7 @@ export async function PATCH(
 
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "更新失败" }, { status: 500 });
+    return NextResponse.json({ error: "商家不存在或更新失败" }, { status: 404 });
   }
 }
 
@@ -83,6 +88,6 @@ export async function DELETE(
     await prisma.business.delete({ where: { id: parseInt(id) } });
     return NextResponse.json({ success: true });
   } catch {
-    return NextResponse.json({ error: "删除失败" }, { status: 500 });
+    return NextResponse.json({ error: "商家不存在或删除失败" }, { status: 404 });
   }
 }

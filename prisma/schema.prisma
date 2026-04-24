@@ -48,6 +48,7 @@ model Business {
 
   @@index([latitude, longitude])
   @@index([name])
+  @@index([createdAt])
   @@map("businesses")
 }
 
@@ -61,5 +62,7 @@ model BusinessTag {
   tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, tagId])
+  @@index([businessId])
+  @@index([tagId])
   @@map("business_tags")
 }

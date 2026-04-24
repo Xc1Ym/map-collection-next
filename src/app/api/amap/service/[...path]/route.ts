@@ -34,7 +34,7 @@ export async function GET(
       headers: {
         "Content-Type":
           res.headers.get("Content-Type") || "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": request.nextUrl.origin,
       },
     });
   } catch {

@@ -5,6 +5,7 @@ import type { Business, Tag } from "@/types";
 import { BusinessTable } from "@/components/business/business-table";
 import { BusinessForm } from "@/components/business/business-form";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 
 interface AdminPageClientProps {
@@ -19,21 +20,27 @@ export function AdminPageClient({
   const [businesses, setBusinesses] = useState(initialBusinesses);
   const [editBusiness, setEditBusiness] = useState<Business | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Business | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  async function handleDelete(id: number) {
-    if (!confirm("确定要删除这个商家吗？此操作不可恢复。")) return;
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
 
     try {
-      const res = await fetch(`/api/businesses/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/businesses/${deleteTarget.id}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
         toast.success("商家删除成功");
-        setBusinesses((prev) => prev.filter((b) => b.id !== id));
+        setBusinesses((prev) => prev.filter((b) => b.id !== deleteTarget.id));
       } else {
         toast.error(data.error || "删除失败");
       }
     } catch {
       toast.error("网络错误，请重试");
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
     }
   }
 
@@ -55,7 +62,10 @@ export function AdminPageClient({
       <BusinessTable
         businesses={businesses}
         onEdit={setEditBusiness}
-        onDelete={handleDelete}
+        onDelete={(id) => {
+          const target = businesses.find((b) => b.id === id);
+          if (target) setDeleteTarget(target);
+        }}
       />
 
       {(showAddForm || editBusiness) && (
@@ -69,6 +79,15 @@ export function AdminPageClient({
           onSuccess={refreshBusinesses}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="删除商家"
+        description={`确定要删除「${deleteTarget?.name}」吗？此操作不可恢复。`}
+        onConfirm={confirmDelete}
+        loading={deleting}
+      />
     </div>
   );
 }

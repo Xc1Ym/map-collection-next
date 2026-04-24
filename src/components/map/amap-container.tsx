@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AMapLoader from "@amap/amap-jsapi-loader";
 import type { Business } from "@/types";
 
@@ -9,12 +9,22 @@ interface AmapContainerProps {
   onMarkerClick?: (business: Business) => void;
 }
 
+function createMarkerContent(name: string, color: string) {
+  return `<div style="background-color:${color};padding:8px 12px;border-radius:6px;color:white;font-size:14px;font-weight:bold;min-width:80px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${name}</div>`;
+}
+
 export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<AMap.Map | null>(null);
   const markersRef = useRef<AMap.Marker[]>([]);
   const onMarkerClickRef = useRef(onMarkerClick);
   const [loaded, setLoaded] = useState(false);
+
+  // Stable key for businesses list to detect actual changes
+  const businessKey = useMemo(
+    () => businesses.map((b) => `${b.id}:${b.tags.map((t) => t.color).join(",")}`).join("|"),
+    [businesses]
+  );
 
   useEffect(() => {
     onMarkerClickRef.current = onMarkerClick;
@@ -68,15 +78,17 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
     const map = mapInstanceRef.current;
     if (!map || !loaded) return;
 
+    // Remove old markers
     markersRef.current.forEach((m) => map.remove(m));
     markersRef.current = [];
 
+    // Create new markers
     businesses.forEach((b) => {
       const mainColor = b.tags[0]?.color || "#3498db";
       const marker = new AMap.Marker({
         position: new AMap.LngLat(b.longitude, b.latitude),
         title: b.name,
-        content: `<div style="background-color:${mainColor};padding:8px 12px;border-radius:6px;color:white;font-size:14px;font-weight:bold;min-width:80px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${b.name}</div>`,
+        content: createMarkerContent(b.name, mainColor),
       });
 
       marker.on("click", () => {
@@ -98,7 +110,8 @@ export function AmapContainer({ businesses, onMarkerClick }: AmapContainerProps)
     if (businesses.length > 0) {
       map.setCenter([businesses[0].longitude, businesses[0].latitude]);
     }
-  }, [businesses, loaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessKey, loaded]);
 
   return (
     <div
