@@ -4,14 +4,18 @@ import { businessCreateSchema } from "@/lib/validations";
 
 export async function GET(request: NextRequest) {
   const tag = request.nextUrl.searchParams.get("tag");
+  const visited = request.nextUrl.searchParams.get("visited");
+
+  const where: Record<string, unknown> = {};
+  if (tag) where.tags = { some: { tag: { name: tag } } };
+  if (visited === "true") where.visited = true;
+  else if (visited === "false") where.visited = false;
 
   const businesses = await prisma.business.findMany({
     include: {
       tags: { include: { tag: true } },
     },
-    where: tag
-      ? { tags: { some: { tag: { name: tag } } } }
-      : undefined,
+    where: Object.keys(where).length > 0 ? where : undefined,
     orderBy: { createdAt: "desc" },
   });
 
