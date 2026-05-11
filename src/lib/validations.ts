@@ -49,6 +49,7 @@ export const tagUpdateSchema = z.object({
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, "颜色格式必须为 #RRGGBB")
     .optional(),
+  sortOrder: z.number().int().min(0).optional(),
 });
 
 export const searchSchema = z.object({

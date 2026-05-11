@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { tagCreateSchema } from "@/lib/validations";
 
 export async function GET() {
-  const tags = await prisma.tag.findMany({ orderBy: { id: "asc" } });
+  const tags = await prisma.tag.findMany({ orderBy: [{ sortOrder: "asc" }, { id: "asc" }] });
   return NextResponse.json({ success: true, data: tags });
 }
 
