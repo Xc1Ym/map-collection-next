@@ -2,6 +2,7 @@ export interface Tag {
   id: number;
   name: string;
   color: string;
+  sortOrder: number;
 }
 
 export interface Business {

@@ -25,6 +25,7 @@ export default async function AdminPage() {
       id: bt.tag.id,
       name: bt.tag.name,
       color: bt.tag.color,
+      sortOrder: bt.tag.sortOrder,
     })),
   }));
 
@@ -32,6 +33,7 @@ export default async function AdminPage() {
     id: t.id,
     name: t.name,
     color: t.color,
+    sortOrder: t.sortOrder,
   }));
 
   return (

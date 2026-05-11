@@ -29,11 +29,11 @@ export function TagFilter({ value, onChange }: TagFilterProps) {
         left: Math.min(rect.left, window.innerWidth - 160),
       });
     }
-    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("click", handleClick);
     window.addEventListener("resize", handleResize);
     window.addEventListener("scroll", handleResize, true);
     return () => {
-      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("click", handleClick);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleResize, true);
     };
