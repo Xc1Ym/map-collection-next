@@ -69,21 +69,18 @@ export default function TagsPage() {
     const swapIdx = direction === "up" ? idx - 1 : idx + 1;
     if (swapIdx < 0 || swapIdx >= sorted.length) return;
 
-    const swapTag = sorted[swapIdx];
+    [sorted[idx], sorted[swapIdx]] = [sorted[swapIdx], sorted[idx]];
 
     try {
-      await Promise.all([
-        fetch(`/api/tags/${tag.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sortOrder: swapTag.sortOrder }),
-        }),
-        fetch(`/api/tags/${swapTag.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sortOrder: tag.sortOrder }),
-        }),
-      ]);
+      await Promise.all(
+        sorted.map((t, i) =>
+          fetch(`/api/tags/${t.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sortOrder: i }),
+          })
+        )
+      );
       mutate();
     } catch {
       toast.error("排序失败，请重试");
